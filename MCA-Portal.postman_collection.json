@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "MCA Portal API",
+    "description": "Postman collection for MCA Portal – health, fee scrape, enquire, stamp duty.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Root - App status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/",
+            "description": "Returns app name and status."
+          }
+        },
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/health",
+            "description": "Returns status, timestamp, env, uptime."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fees",
+      "item": [
+        {
+          "name": "Scrape fee page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUrl\": \"https://www.mca.gov.in/content/mca/global/en/mca/fo-llp-services/enquire-fees.html\",\n  \"captureNetwork\": true,\n  \"extractContent\": true\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fees/scrape",
+            "description": "Puppeteer scrape of MCA fee page. Optional: fillAndClickCalculateFee with formValues to click Calculate Fee."
+          }
+        },
+        {
+          "name": "Scrape + Fill and Click Calculate Fee",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUrl\": \"https://www.mca.gov.in/content/mca/global/en/mca/fo-llp-services/enquire-fees.html\",\n  \"captureNetwork\": true,\n  \"extractContent\": true,\n  \"fillAndClickCalculateFee\": {\n    \"formValues\": {\n      \"enquireFeeFor\": \"Company\",\n      \"natureOfService\": \"Name reservation and Company Incorporation\",\n      \"subService\": \"Incorporation of a company (SPICe+ Part B)\",\n      \"opcSmallCompany\": \"No\",\n      \"authCapital\": \"Yes\",\n      \"authorisedCapital\": 1000000,\n      \"whetherSec8Company\": \"No\",\n      \"state\": \"Maharashtra\"\n    }\n  }\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fees/scrape",
+            "description": "Fills form and clicks Calculate Fee; may redirect to Home (antibot). feeApiCapture shows internal fee API call if captured."
+          }
+        },
+        {
+          "name": "Enquire fee (direct MCA GET)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service\": \"Company\",\n  \"name\": \"Company\",\n  \"authorisedCapital\": 1000000,\n  \"state\": \"Maharashtra\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fees/enquire",
+            "description": "Direct GET to MCA foserviceEnquirefee with query params. Often returns 403 (MCA blocks server access). Use stamp-duty for rule-based fee."
+          }
+        },
+        {
+          "name": "Stamp duty (rule-based)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enquireFeeFor\": \"Company\",\n  \"natureOfService\": \"Name reservation and Company Incorporation\",\n  \"subService\": \"Incorporation of a company (SPICe+ Part B)\",\n  \"opcSmallCompany\": \"No\",\n  \"authCapital\": \"Yes\",\n  \"authorisedCapitalINR\": 1000000,\n  \"whetherSec8Company\": \"No\",\n  \"state\": \"Maharashtra\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fees/stamp-duty",
+            "description": "Rule-based stamp duty & incorporation fee (LMA rules). All 8 form fields optional with defaults. Returns registrationFees, stampDutyFees, feeDetailsTable, totals."
+          }
+        },
+        {
+          "name": "Stamp duty - Section 8 company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enquireFeeFor\": \"Company\",\n  \"natureOfService\": \"Name reservation and Company Incorporation\",\n  \"subService\": \"Incorporation of a company (SPICe+ Part B)\",\n  \"opcSmallCompany\": \"No\",\n  \"authCapital\": \"Yes\",\n  \"authorisedCapitalINR\": 500000,\n  \"whetherSec8Company\": \"Yes\",\n  \"state\": \"Delhi\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/fees/stamp-duty",
+            "description": "Section 8 company – MoA/AoA stamp duty typically 0."
+          }
+        }
+      ]
+    }
+  ]
+}
