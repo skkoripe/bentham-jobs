@@ -59,7 +59,9 @@ Base URL for all v1 APIs: **`http://localhost:3000/api/v1`** (use `http://127.0.
 
 A short screen recording shows **exactly what happens** when we try to use the MCA fee page and the direct API:
 
-- **File:** [mcaportal.mp4](mcaportal.mp4) (in the project root)
+<video src="mcaportal.mp4" controls width="100%" preload="metadata" playsinline></video>
+
+*Video file: [mcaportal.mp4](mcaportal.mp4) (in the project root)*
 
 Watch it to see: MCA’s antibot behaviour, the debugger blocking inspection, and why the `/api/v1/fees/enquire` call returns **403 Access Denied**. This is why we use the **rule-based** stamp duty API instead.
 
