@@ -6,6 +6,7 @@ Node.js backend for **MCA (Ministry of Corporate Affairs)** fee enquiry and **st
 
 ## Table of Contents
 
+- [Video: MCA issue in action](#video-mca-issue-in-action)
 - [Server setup (your machine)](#server-setup-your-machine)
 - [API endpoints](#api-endpoints)
 - [Stamp duty: two approaches we tried](#stamp-duty-two-approaches-we-tried)
@@ -54,6 +55,16 @@ Base URL for all v1 APIs: **`http://localhost:3000/api/v1`** (use `http://127.0.
 
 ---
 
+## Video: MCA issue in action
+
+A short screen recording shows **exactly what happens** when we try to use the MCA fee page and the direct API:
+
+- **File:** [mcaportal.mp4](mcaportal.mp4) (in the project root)
+
+Watch it to see: MCA’s antibot behaviour, the debugger blocking inspection, and why the `/api/v1/fees/enquire` call returns **403 Access Denied**. This is why we use the **rule-based** stamp duty API instead.
+
+---
+
 ## API endpoints
 
 | Method | Endpoint | Description |
@@ -98,7 +109,7 @@ MCA blocks direct server-to-server requests. The response looks like:
 }
 ```
 
-So **inspect bhi mushkil hai (antibot + debugger), aur direct call pe 403** — isliye ye approach production-ready nahi hai.
+So **inspecting the real network call is difficult** (antibot + debugger), and **the direct call returns 403** — therefore this approach is not production-ready.
 
 ### Approach 2: Rule-based stamp duty (current solution)
 
